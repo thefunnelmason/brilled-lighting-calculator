@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Energy Loss Calculator</title>
+  <style>
+    body {
+      font-family: Montserrat, sans-serif;
+      font-size: 16px;
+      margin: 0;
+      padding: 0;
+      background-color: transparent;
+    }
+    .container {
+      width: 90%;
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #fafafa;
+      border-radius: 10px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .input-group {
+      display: grid;
+      grid-template-columns: 1.3fr 0.5fr 1.3fr 0.5fr 1fr auto;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .input-group input {
+      padding: 8px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      width: 100%;
+    }
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    .button-group button {
+      flex: 1;
+      padding: 12px;
+      font-size: 20px;
+      background-color: #00AEF0;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .button-group button:hover {
+      background-color: #00aef0;
+    }
+    .remove-fixture {
+      padding: 8px;
+      font-size: 14px;
+      background-color: #c82333;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .remove-fixture:hover {
+      background-color: #a71d2a;
+    }
+    .results {
+      margin-top: 20px;
+    }
+    .results p {
+      font-size: 20px;
+    }
+    .results span {
+      color: red;
+      font-weight: bold;
+    }
+    /* Custom Dropdown Styling */
+    .custom-dropdown {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+      font-size: 16px;
+    }
+    .selected-option {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #fff;
+      cursor: pointer;
+    }
+    .dropdown-options {
+      display: none;
+      position: absolute;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background: #fff;
+      max-height: 150px;
+      overflow-y: auto;
+      z-index: 10;
+    }
+    .dropdown-option {
+      padding: 8px;
+      cursor: pointer;
+    }
+    .dropdown-option:hover {
+      background-color: #f1f1f1;
+    }
+    /* Tooltip styling */
+    .tooltip {
+      position: absolute;
+      background: #fff;
+      border: 1px solid #ddd;
+      padding: 5px;
+      border-radius: 4px;
+      display: none;
+      z-index: 100;
+    }
+    .tooltip img {
+      width: 150px;
+      height: auto;
+      display: block;
+    }
+    /* Mobile Optimization */
+    @media (max-width: 768px) {
+      .input-group {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      .button-group {
+        flex-direction: column;
+      }
+      .button-group button {
+        width: 100%;
+      }
+      .results h2 {
+        font-size: 18px;
+        text-align: center;
+      }
+      .results p {
+        text-align: center;
+      }
+    }
+    @media (max-width: 480px) {
+      .container {
+        padding: 15px;
+      }
+      .button-group button {
+        padding: 10px;
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="https://cdn-ilccofd.nitrocdn.com/NTwfBjlJsvwFdCTcPxhJwxdirFDYgtoM/assets/images/optimized/rev-931d771/www.brilledlighting.com/wp-content/uploads/2024/02/Brilled-Lighting-main-logo.png" alt="Brilled Lighting Logo" style="max-width: 150px; display: block; margin: 0 auto 20px;" />
+    <h1 style="text-align: center;font-weight: bold;font-style: Oswald; font-size: 30px">Energy Loss Calculator</h1>
+    <p style="text-align: left;font-size: 18px; font-weight: bold;">
+      Calculate how much you're unnecessarily losing on lighting costs—and how much you could be saving instead.
+    </p>
+
+    <div id="fixtures-container">
+      <!-- Fixture group 1 -->
+      <div class="input-group">
+        <!-- Custom Dropdown for Fixture Selection -->
+        <div class="custom-dropdown fixture-dropdown">
+          <div class="selected-option">Select Fixture</div>
+          <div class="dropdown-options">
+            <div class="dropdown-option" data-value="2x4-troffer" data-image="https://www.brilledlighting.com/wp-content/uploads/2025/04/2x4-troffer.jpg">
+              2'x4' Troffer 4-Lamp
+            </div>
+            <div class="dropdown-option" data-value="parabolic-troffer" data-image="https://www.brilledlighting.com/wp-content/uploads/2025/04/parabolic-troffer.webp">
+              2'x4' 3-lamp Troffer
+            </div>
+            <div class="dropdown-option" data-value="4-lamp-wrap" data-image="https://www.brilledlighting.com/wp-content/uploads/2025/04/4-lamp-wrap.jpeg"> 
+              4' 4-Lamp Wrap Fixture
+            </div>
+            <div class="dropdown-option" data-value="2-lamp-wrap" data-image="https://www.brilledlighting.com/wp-content/uploads/2025/04/2-Lamp-Wrap.png">
+              4' 2-Lamp Wrap Fixture
+            </div>
+            <div class="dropdown-option" data-value="8-lamp-highbay" data-image="https://www.brilledlighting.com/wp-content/uploads/2025/04/8-lamp-highbay.webp">
+              4' 8-Lamp High Bay
+            </div>
+            <div class="dropdown-option" data-value="t5ho-highbay" data-image="https://www.brilledlighting.com/wp-content/uploads/2025/04/t5ho-highbay.webp">
+              4' 6-Lamp High Bay
+            </div>
+            <div class="dropdown-option" data-value="metal-halide-highbay" data-image="https://www.brilledlighting.com/wp-content/uploads/2025/04/metal-halide-highbay.jpg">
+              Metal Halide High Bay
+            </div>
+            <div class="dropdown-option" data-value="34W-2-lamp-strip" data-image="https://www.brilledlighting.com/wp-content/uploads/2025/04/34w-2-lamp-strip.jpg">
+              2' 2-Lamp Strip Fixture
+            </div>
+            <div class="dropdown-option" data-value="64W-2-lamp-strip" data-image="https://www.brilledlighting.com/wp-content/uploads/2025/04/64w-2-lamp-strip.webp">
+              4' 2-Lamp Strip Fixture
+            </div>
+            <div class="dropdown-option" data-value="4-lamp-strip" data-image="https://www.brilledlighting.com/wp-content/uploads/2025/04/4-lamp-strip.webp">
+              8' 4-Lamp Strip Fixture
+            </div>
+            <div class="dropdown-option" data-value="1-lamp-strip" data-image="https://www.brilledlighting.com/wp-content/uploads/2025/04/1-lamp-strip.webp">
+              8' 1-Lamp Strip Fixture
+            </div>
+            <div class="dropdown-option" data-value="wall-pack" data-image="https://www.brilledlighting.com/wp-content/uploads/2025/04/1-lamp-strip.webp">
+              Wall Pack
+            </div>
+            <div class="dropdown-option" data-value="area-light" data-image="https://www.brilledlighting.com/wp-content/uploads/2025/04/area-light.jpg">
+              Area Light
+            </div>
+            <div class="dropdown-option" data-value="flood-light" data-image="https://www.brilledlighting.com/wp-content/uploads/2025/04/flood-light.jpg">
+              Small Flood Light
+            </div>
+          </div>
+        </div>
+        <input type="number" class="small-input current-wattage" placeholder="Current Wattage" />
+        <input type="text" class="proposed-led-fixture" placeholder="Proposed LED Fixture" />
+        <input type="number" class="small-input led-wattage" placeholder="LED Wattage" />
+        <input type="number" placeholder="Fixture Count" /> 
+        <!-- Remove Fixture Button -->
+        <button class="remove-fixture" type="button">Remove</button>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label for="hours-per-day">Hours of Operation per Day</label>
+      <input type="number" id="hours-per-day" placeholder="Enter Hours" />
+    </div>
+    <div class="input-group">
+      <label for="operational-days">Operational Days per Year</label>
+      <input type="number" id="operational-days" placeholder="Enter Operational Days" />
+    </div>
+    <div class="input-group">
+      <label for="price-per-kwh">Price per KWh</label>
+      <input type="number" id="price-per-kwh" placeholder="Enter Price per KWh" />
+    </div>
+
+    <div class="button-group">
+      <button id="add-fixture">Add Another Fixture</button>
+      <button id="calculate">Calculate Losses</button>
+    </div>
+
+    <div class="results" id="results">
+      <h3>Your Current Energy Loss Is More Than a Cost—It’s a Hidden Opportunity to Save Big.</h3>
+      <h1>
+        <p>
+          <strong>Daily Loss: <span id="daily-loss">$0.00</span> | Monthly Loss: <span id="monthly-loss">$0.00</span> | Annual Loss: <span id="annual-loss">$0.00</span></strong>
+        </p>
+      </h1>
+      <h3 style="text-align: center; color: black; font-size: 16px; font-style: italic;">
+        NOTE: The calculator provides approximate estimates. For a precise evaluation, schedule a free energy audit with our experts to identify your true savings and optimal retrofit options.
+      </h3>
+    </div>
+  </div>
+
+  <!-- Tooltip for hover image -->
+  <div id="tooltip" class="tooltip"></div>
+
+  <script>
+    // Predefined fixture data for autofill functionality
+    const fixtureData = {
+      "2x4-troffer": { currentWattage: 112, proposedLedFixture: "2'x4' LED Troffer Retrofit Kit", ledWattage: 25 },
+      "parabolic-troffer": { currentWattage: 90, proposedLedFixture: "2'x4' LED Troffer Retrofit Kit", ledWattage: 25 },
+      "4-lamp-wrap": { currentWattage: 112, proposedLedFixture: "LED Decorative Wrap Fixture", ledWattage: 28 },
+      "2-lamp-wrap": { currentWattage: 62, proposedLedFixture: "4' LED Wraparound Light", ledWattage: 34 },
+      "8-lamp-highbay": { currentWattage: 224, proposedLedFixture: "LED Linear Highbay", ledWattage: 100 },
+      "t5ho-highbay": { currentWattage: 351, proposedLedFixture: "LED Linear Highbay", ledWattage: 100 },
+      "metal-halide-highbay": { currentWattage: 400, proposedLedFixture: "LED Linear High Bay", ledWattage: 110 },
+      "34W-2-lamp-strip": { currentWattage: 34, proposedLedFixture: "LED Magnetic Strip Kit", ledWattage: 30 },
+      "64W-2-lamp-strip": { currentWattage: 64, proposedLedFixture: "LED Decorative Wrap Fixture", ledWattage: 28 },
+      "4-lamp-strip": { currentWattage: 112, proposedLedFixture: "8' LED Strip Fixture Retrofit", ledWattage: 65 },
+      "1-lamp-strip": { currentWattage: 140, proposedLedFixture: "8' LED Strip Fixture", ledWattage: 64 },
+      "wall-pack": { currentWattage: 400, proposedLedFixture: "LED Wall Pack", ledWattage: 120 },
+      "area-light": { currentWattage: 400, proposedLedFixture: "LED Area Light", ledWattage: 300 },
+      "flood-light": { currentWattage: 100, proposedLedFixture: "LED Flood Light", ledWattage: 60 }
+    };
+
+    // Utility function to check if the user is on a touch device
+    function isTouchDevice() {
+      return ('ontouchstart' in window || navigator.maxTouchPoints);
+    }
+
+    // Function to initialize dropdown functionality
+    function initializeDropdown(dropdown) {
+      const selectedOption = dropdown.querySelector('.selected-option');
+      const optionsContainer = dropdown.querySelector('.dropdown-options');
+      const dropdownOptions = dropdown.querySelectorAll('.dropdown-option');
+      const tooltip = document.getElementById('tooltip');
+
+      // Toggle dropdown options on click
+      selectedOption.addEventListener('click', function (e) {
+        e.stopPropagation();
+        optionsContainer.style.display = optionsContainer.style.display === 'block' ? 'none' : 'block';
+      });
+
+      dropdownOptions.forEach(function (option) {
+        // Set selection and autofill on click
+        option.addEventListener('click', function (e) {
+          e.stopPropagation();
+          selectedOption.textContent = option.textContent.trim();
+          optionsContainer.style.display = 'none';
+          // Autofill based on selected value
+          const selectedValue = option.getAttribute('data-value');
+          const data = fixtureData[selectedValue];
+          if (data) {
+            const inputGroup = option.closest('.input-group');
+            inputGroup.querySelector('.current-wattage').value = data.currentWattage;
+            inputGroup.querySelector('.proposed-led-fixture').value = data.proposedLedFixture;
+            inputGroup.querySelector('.led-wattage').value = data.ledWattage;
+          }
+        });
+
+        // **Disable hover effect for touch devices**
+        if (!isTouchDevice()) {
+          // Show tooltip with image preview on hover
+          option.addEventListener('mouseenter', function (event) {
+            const imageUrl = option.getAttribute('data-image');
+            if (imageUrl) {
+              tooltip.innerHTML = `<img src="${imageUrl}" alt="Fixture Image">`;
+              tooltip.style.display = 'block';
+              tooltip.style.top = event.pageY + 10 + 'px';
+              tooltip.style.left = event.pageX + 10 + 'px';
+            }
+          });
+
+          option.addEventListener('mousemove', function (e) {
+            tooltip.style.left = e.pageX + 10 + 'px';
+            tooltip.style.top = e.pageY + 10 + 'px';
+          });
+
+          option.addEventListener('mouseleave', function () {
+            tooltip.style.display = 'none';
+          });
+        }
+      });
+
+      // Close dropdown if clicked outside
+      document.addEventListener('click', function (e) {
+        if (!dropdown.contains(e.target)) {
+          optionsContainer.style.display = 'none';
+        }
+      });
+    }
+
+    // Initialize dropdowns on DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelectorAll('.fixture-dropdown').forEach(function (dropdown) {
+        initializeDropdown(dropdown);
+      });
+    });
+
+    // Add Another Fixture functionality
+    document.getElementById('add-fixture').addEventListener('click', function () {
+      const fixturesContainer = document.getElementById('fixtures-container');
+      const firstGroup = fixturesContainer.querySelector('.input-group');
+      const clone = firstGroup.cloneNode(true);
+
+      // Reset the custom dropdown in the cloned group
+      const dropdown = clone.querySelector('.fixture-dropdown');
+      dropdown.querySelector('.selected-option').textContent = 'Select Fixture';
+      dropdown.querySelector('.dropdown-options').style.display = 'none';
+
+      // Clear all input fields in the cloned group
+      clone.querySelectorAll('input').forEach(function (input) {
+        input.value = '';
+      });
+      fixturesContainer.appendChild(clone);
+
+      // Reinitialize the dropdown functionality for the new clone
+      initializeDropdown(dropdown);
+    });
+
+    // Remove Fixture functionality
+    document.addEventListener('click', function (e) {
+      if (e.target && e.target.classList.contains('remove-fixture')) {
+        const fixturesContainer = document.getElementById('fixtures-container');
+        const allGroups = fixturesContainer.querySelectorAll('.input-group');
+        // Only remove if more than one fixture group exists
+        if (allGroups.length > 1) {
+          e.target.closest('.input-group').remove();
+        } else {
+          alert("At least one fixture is required.");
+        }
+      }
+    });
+
+    // Calculator functionality
+    document.getElementById('calculate').addEventListener('click', function () {
+      // Sum current and LED wattage for all fixtures (with count)
+      let totalCurrentWattage = 0;
+      let totalLedWattage = 0;
+
+      const fixtures = document.querySelectorAll('#fixtures-container .input-group');
+      fixtures.forEach(function (fixture) {
+        // Using the last input (Fixture Count) for count:
+        const currentWattage = parseFloat(fixture.querySelector('.current-wattage').value) || 0;
+        const ledWattage = parseFloat(fixture.querySelector('.led-wattage').value) || 0;
+        const count = parseInt(fixture.querySelector('input[placeholder="Fixture Count"]').value) || 0;
+
+        if (currentWattage > 0 && ledWattage > 0 && count > 0) {
+          totalCurrentWattage += currentWattage * count;
+          totalLedWattage += ledWattage * count;
+        }
+      });
+
+      // Get user inputs for hours per day, operational days, and price per kWh
+      const hoursPerDay = parseFloat(document.getElementById('hours-per-day').value) || 0;
+      const operationalDays = parseFloat(document.getElementById('operational-days').value) || 365;
+      const pricePerKwh = parseFloat(document.getElementById('price-per-kwh').value) || 0;
+
+      // Calculate daily energy usage in kWh for both current and LED systems
+      const dailyCurrentUsage = (totalCurrentWattage * hoursPerDay) / 1000;
+      const dailyLEDUsage = (totalLedWattage * hoursPerDay) / 1000;
+
+      // Calculate daily cost difference (loss)
+      const dailyLoss = (dailyCurrentUsage - dailyLEDUsage) * pricePerKwh;
+
+      // Calculate monthly and annual losses
+      const monthlyLoss = dailyLoss * 30;
+      const annualLoss = dailyLoss * operationalDays;
+
+      // Display the results
+      document.getElementById('daily-loss').textContent = `$${dailyLoss.toFixed(2)}`;
+      document.getElementById('monthly-loss').textContent = `$${monthlyLoss.toFixed(2)}`;
+      document.getElementById('annual-loss').textContent = `$${annualLoss.toFixed(2)}`;
+    });
+  </script>
+</body>
+</html>
